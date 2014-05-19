@@ -16,14 +16,15 @@
 		00D5CD1E1929D63100B55E28 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD1D1929D63100B55E28 /* AppDelegate.m */; };
 		00D5CD211929D63100B55E28 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00D5CD1F1929D63100B55E28 /* Main.storyboard */; };
 		00D5CD241929D63100B55E28 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD231929D63100B55E28 /* ViewController.m */; };
-		00D5CD271929D63100B55E28 /* MyScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD261929D63100B55E28 /* MyScene.m */; };
-		00D5CD291929D63100B55E28 /* Spaceship.png in Resources */ = {isa = PBXBuildFile; fileRef = 00D5CD281929D63100B55E28 /* Spaceship.png */; };
 		00D5CD2B1929D63100B55E28 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 00D5CD2A1929D63100B55E28 /* Images.xcassets */; };
 		00D5CD321929D63100B55E28 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00D5CD311929D63100B55E28 /* XCTest.framework */; };
 		00D5CD331929D63100B55E28 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00D5CD0B1929D63100B55E28 /* Foundation.framework */; };
 		00D5CD341929D63100B55E28 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00D5CD0F1929D63100B55E28 /* UIKit.framework */; };
 		00D5CD3C1929D63100B55E28 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 00D5CD3A1929D63100B55E28 /* InfoPlist.strings */; };
 		00D5CD3E1929D63100B55E28 /* CupsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD3D1929D63100B55E28 /* CupsTests.m */; };
+		00D5CD4C1929D8F800B55E28 /* GameScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD4B1929D8F800B55E28 /* GameScene.m */; };
+		00D5CD521929DCE100B55E28 /* Tile.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD511929DCE100B55E28 /* Tile.m */; };
+		00D5CD551929DCF500B55E28 /* UIColor+GameColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD541929DCF500B55E28 /* UIColor+GameColors.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,15 +52,18 @@
 		00D5CD201929D63100B55E28 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		00D5CD221929D63100B55E28 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		00D5CD231929D63100B55E28 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		00D5CD251929D63100B55E28 /* MyScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyScene.h; sourceTree = "<group>"; };
-		00D5CD261929D63100B55E28 /* MyScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MyScene.m; sourceTree = "<group>"; };
-		00D5CD281929D63100B55E28 /* Spaceship.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Spaceship.png; sourceTree = "<group>"; };
 		00D5CD2A1929D63100B55E28 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		00D5CD301929D63100B55E28 /* CupsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CupsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00D5CD311929D63100B55E28 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		00D5CD391929D63100B55E28 /* CupsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CupsTests-Info.plist"; sourceTree = "<group>"; };
 		00D5CD3B1929D63100B55E28 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		00D5CD3D1929D63100B55E28 /* CupsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CupsTests.m; sourceTree = "<group>"; };
+		00D5CD4A1929D8F800B55E28 /* GameScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameScene.h; sourceTree = "<group>"; };
+		00D5CD4B1929D8F800B55E28 /* GameScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameScene.m; sourceTree = "<group>"; };
+		00D5CD501929DCE100B55E28 /* Tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
+		00D5CD511929DCE100B55E28 /* Tile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tile.m; sourceTree = "<group>"; };
+		00D5CD531929DCF500B55E28 /* UIColor+GameColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+GameColors.h"; sourceTree = "<group>"; };
+		00D5CD541929DCF500B55E28 /* UIColor+GameColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+GameColors.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,9 +130,12 @@
 				00D5CD1F1929D63100B55E28 /* Main.storyboard */,
 				00D5CD221929D63100B55E28 /* ViewController.h */,
 				00D5CD231929D63100B55E28 /* ViewController.m */,
-				00D5CD251929D63100B55E28 /* MyScene.h */,
-				00D5CD261929D63100B55E28 /* MyScene.m */,
-				00D5CD281929D63100B55E28 /* Spaceship.png */,
+				00D5CD4A1929D8F800B55E28 /* GameScene.h */,
+				00D5CD4B1929D8F800B55E28 /* GameScene.m */,
+				00D5CD501929DCE100B55E28 /* Tile.h */,
+				00D5CD511929DCE100B55E28 /* Tile.m */,
+				00D5CD531929DCF500B55E28 /* UIColor+GameColors.h */,
+				00D5CD541929DCF500B55E28 /* UIColor+GameColors.m */,
 				00D5CD2A1929D63100B55E28 /* Images.xcassets */,
 				00D5CD141929D63100B55E28 /* Supporting Files */,
 			);
@@ -242,7 +249,6 @@
 			files = (
 				00D5CD181929D63100B55E28 /* InfoPlist.strings in Resources */,
 				00D5CD2B1929D63100B55E28 /* Images.xcassets in Resources */,
-				00D5CD291929D63100B55E28 /* Spaceship.png in Resources */,
 				00D5CD211929D63100B55E28 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -262,9 +268,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00D5CD271929D63100B55E28 /* MyScene.m in Sources */,
+				00D5CD521929DCE100B55E28 /* Tile.m in Sources */,
+				00D5CD551929DCF500B55E28 /* UIColor+GameColors.m in Sources */,
 				00D5CD241929D63100B55E28 /* ViewController.m in Sources */,
 				00D5CD1E1929D63100B55E28 /* AppDelegate.m in Sources */,
+				00D5CD4C1929D8F800B55E28 /* GameScene.m in Sources */,
 				00D5CD1A1929D63100B55E28 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -393,6 +401,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Cups/Cups-Prefix.pch";
 				INFOPLIST_FILE = "Cups/Cups-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
 				WRAPPER_EXTENSION = app;
@@ -407,6 +416,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Cups/Cups-Prefix.pch";
 				INFOPLIST_FILE = "Cups/Cups-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
 				WRAPPER_EXTENSION = app;
