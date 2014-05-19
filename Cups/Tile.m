@@ -28,8 +28,9 @@
         [self setAnchorPoint:CGPointMake(0.5, 0.5)];
         self.rounding = [[SKShapeNode alloc] init];
 
-        UIBezierPath *bezier = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(-self.size.width / 2.0, -self.size.height / 2.0, self.size.width, self.size.height)
-                                                          cornerRadius:3.0];
+//        UIBezierPath *bezier = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(-self.size.width / 2.0, -self.size.height / 2.0, self.size.width, self.size.height)
+//                                                          cornerRadius:3.0];
+        UIBezierPath *bezier = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(-self.size.width / 2.0, -self.size.height / 2.0, self.size.width, self.size.height)];
 
         [self.rounding setFillColor:[UIColor _colorForTileNumber:2]];
         [self.rounding setStrokeColor:[UIColor _colorForTileNumber:2]];
@@ -45,12 +46,16 @@
 
         [self addChild:self.label];
 
-        [self setPhysicsBody:[SKPhysicsBody bodyWithRectangleOfSize:self.size]];
-        [self.physicsBody setDynamic:YES];
+        [self setPhysicsBody:[SKPhysicsBody bodyWithCircleOfRadius:15.0]];
+        [self.physicsBody setDynamic:NO];
         [self.physicsBody setAffectedByGravity:NO];
-        [self.physicsBody setFriction:0.0];
+        [self.physicsBody setFriction:100.0];
         [self.physicsBody setRestitution:0.0];
-        [self.physicsBody setCollisionBitMask:0];
+
+        [self.physicsBody setCategoryBitMask:2];
+        [self.physicsBody setContactTestBitMask:2];
+        [self.physicsBody setCollisionBitMask:2 | 1];
+
 
         [self setNumberValue:numberValue];
     }
@@ -66,9 +71,6 @@
     [self.label setFontColor:[UIColor _fontColorForTileNumber:numberValue]];
     [self.rounding setFillColor:[UIColor _colorForTileNumber:numberValue]];
     [self.rounding setStrokeColor:[UIColor _colorForTileNumber:numberValue]];
-
-    [self.physicsBody setCategoryBitMask:(uint32_t)numberValue];
-    [self.physicsBody setContactTestBitMask:(uint32_t)numberValue];
 }
 
 - (void)removeFromParent // Solves iOS 7.1 bug

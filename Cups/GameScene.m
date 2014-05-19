@@ -10,7 +10,7 @@
 #import "Tile.h"
 #import "UIColor+GameColors.h"
 
-@interface GameScene ()
+@interface GameScene () < SKPhysicsContactDelegate >
 
 @property (strong, nonatomic) SKShapeNode *track;
 @property (strong, nonatomic) SKShapeNode *bucket;
@@ -24,6 +24,14 @@
     self = [super initWithSize:size];
     
     if (self) {
+
+        [self.physicsWorld setContactDelegate:self];
+        [self.physicsWorld setGravity:CGVectorMake(0.0, -20.0)];
+        [self setPhysicsBody:[SKPhysicsBody bodyWithEdgeLoopFromRect:CGRectMake(0.0, 0.0, size.width, size.height)]];
+        [self.physicsBody setCategoryBitMask:1];
+        [self.physicsBody setCollisionBitMask:2];
+        [self.physicsBody setContactTestBitMask:0];
+        [self.physicsBody setFriction:100.0];
         
         [self setBackgroundColor:[UIColor _backgroundColor]];
         
@@ -56,34 +64,41 @@
     return self;
 }
 
-void MyCGPathApplierFunc (void *info, const CGPathElement *element) {
-    NSMutableArray *bezierPoints = (__bridge NSMutableArray *)info;
-    
-    CGPoint *points = element->points;
-    CGPathElementType type = element->type;
-    
-    switch(type) {
-        case kCGPathElementMoveToPoint: // contains 1 point
-            [bezierPoints addObject:[NSValue valueWithCGPoint:points[0]]];
-            break;
+- (void)didMoveToView:(SKView *)view
+{
+    [super didMoveToView:view];
+
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGesture:)];
+    [view addGestureRecognizer:tapGesture];
+}
+
+- (void)tapGesture:(UITapGestureRecognizer *)gesture
+{
+    Tile *tile = [[Tile alloc] initWithNumberValue:2];
+    [tile setPosition:CGPointMake(self.size.width / 2.0, self.size.height / 2.0)];
+    [self.track addChild:tile];
+
+    [tile.physicsBody setAffectedByGravity:YES];
+    [tile.physicsBody setDynamic:YES];
+}
+
+
+- (void)didBeginContact:(SKPhysicsContact *)contact
+{
+    if ([contact.bodyA.node isMemberOfClass:[Tile class]] && [contact.bodyB.node isMemberOfClass:[Tile class]]) {
+        Tile *tileA = (Tile *)contact.bodyA.node;
+        Tile *tileB = (Tile *)contact.bodyB.node;
+
+        if (tileA.numberValue == tileB.numberValue) {
+            if ([tileB respondsToSelector:@selector(removeFromParent)]) {
+                [tileB removeFromParent];
+            }
+
+            tileA.numberValue *= 2.0;
+        }else{
             
-        case kCGPathElementAddLineToPoint: // contains 1 point
-            [bezierPoints addObject:[NSValue valueWithCGPoint:points[0]]];
-            break;
-            
-        case kCGPathElementAddQuadCurveToPoint: // contains 2 points
-            [bezierPoints addObject:[NSValue valueWithCGPoint:points[0]]];
-            [bezierPoints addObject:[NSValue valueWithCGPoint:points[1]]];
-            break;
-            
-        case kCGPathElementAddCurveToPoint: // contains 3 points
-            [bezierPoints addObject:[NSValue valueWithCGPoint:points[0]]];
-            [bezierPoints addObject:[NSValue valueWithCGPoint:points[1]]];
-            [bezierPoints addObject:[NSValue valueWithCGPoint:points[2]]];
-            break;
-            
-        case kCGPathElementCloseSubpath: // contains no point
-            break;
+            NSLog(@"%@",contact);
+        }
     }
 }
 
@@ -124,6 +139,37 @@ void MyCGPathApplierFunc (void *info, const CGPathElement *element) {
     [self setBucket:nil];
     
     [super removeFromParent];
+}
+
+void MyCGPathApplierFunc (void *info, const CGPathElement *element) {
+    NSMutableArray *bezierPoints = (__bridge NSMutableArray *)info;
+
+    CGPoint *points = element->points;
+    CGPathElementType type = element->type;
+
+    switch(type) {
+        case kCGPathElementMoveToPoint: // contains 1 point
+            [bezierPoints addObject:[NSValue valueWithCGPoint:points[0]]];
+            break;
+
+        case kCGPathElementAddLineToPoint: // contains 1 point
+            [bezierPoints addObject:[NSValue valueWithCGPoint:points[0]]];
+            break;
+
+        case kCGPathElementAddQuadCurveToPoint: // contains 2 points
+            [bezierPoints addObject:[NSValue valueWithCGPoint:points[0]]];
+            [bezierPoints addObject:[NSValue valueWithCGPoint:points[1]]];
+            break;
+
+        case kCGPathElementAddCurveToPoint: // contains 3 points
+            [bezierPoints addObject:[NSValue valueWithCGPoint:points[0]]];
+            [bezierPoints addObject:[NSValue valueWithCGPoint:points[1]]];
+            [bezierPoints addObject:[NSValue valueWithCGPoint:points[2]]];
+            break;
+
+        case kCGPathElementCloseSubpath: // contains no point
+            break;
+    }
 }
 
 @end
