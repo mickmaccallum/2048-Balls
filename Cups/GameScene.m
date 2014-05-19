@@ -13,7 +13,8 @@
 @interface GameScene () < SKPhysicsContactDelegate >
 
 @property (strong, nonatomic) SKShapeNode *track;
-@property (strong, nonatomic) SKShapeNode *bucket;
+@property (strong, nonatomic) SKShapeNode *leftBucket;
+@property (strong, nonatomic) SKShapeNode *rightBucket;
 
 @end
 
@@ -36,7 +37,9 @@
         [self setBackgroundColor:[UIColor _backgroundColor]];
         
         [self addChild:self.track];
-        [self addChild:self.bucket];
+
+        [self addChild:self.leftBucket];
+        [self addChild:self.rightBucket];
 
         NSMutableArray *bezierPoints = [NSMutableArray array];
         CGPathApply(self.track.path, (__bridge void *)(bezierPoints), MyCGPathApplierFunc);
@@ -119,15 +122,40 @@
     return _track;
 }
 
-- (SKShapeNode *)bucket
+- (SKShapeNode *)leftBucket
 {
-    if (!_bucket) {
-        _bucket = [SKShapeNode new];
+    if (!_leftBucket) {
+        _leftBucket = [SKShapeNode new];
         
+        UIBezierPath *bezier = [UIBezierPath bezierPath];
+        
+        CGFloat centerX = self.size.width / 2.0;
+        CGFloat centerY = self.size.height / 2.0;
+        CGFloat topOfTrack = self.track.frame.size.height + self.track.frame.origin.y;
+        
+        [bezier moveToPoint:CGPointMake(25.0, topOfTrack - 24.0)];
+        [bezier addLineToPoint:CGPointMake(centerX - 17.0, centerY)];
+        [bezier addLineToPoint:CGPointMake(centerX - 17.0, centerY - 30.0)];
+        [bezier moveToPoint:CGPointMake(centerX - 17.0, centerY + 50)];
+        [bezier addLineToPoint:CGPointMake(25.0 + 24.0, topOfTrack)];
+        
+        
+        [_leftBucket setPath:bezier.CGPath];
+        [_leftBucket setFillColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
+        [_leftBucket setStrokeColor:[SKColor _boardEdgeColor]];
+    }
+    
+    return _leftBucket;
+}
+
+- (SKShapeNode *)rightBucket
+{
+    if (!_rightBucket) {
+        _rightBucket = [SKShapeNode new];
         
     }
     
-    return _bucket;
+    return _rightBucket;
 }
 
 - (void)removeFromParent // Fuck iOS 7.1
@@ -135,8 +163,11 @@
     [self.track removeFromParent];
     [self setTrack:nil];
     
-    [self.bucket removeFromParent];
-    [self setBucket:nil];
+    [self.leftBucket removeFromParent];
+    [self setLeftBucket:nil];
+    
+    [self.rightBucket removeFromParent];
+    [self setRightBucket:nil];
     
     [super removeFromParent];
 }
