@@ -27,7 +27,7 @@
     if (self) {
 
         [self.physicsWorld setContactDelegate:self];
-        [self.physicsWorld setGravity:CGVectorMake(0.0, -20.0)];
+        [self.physicsWorld setGravity:CGVectorMake(0.0, -10.0)];
         [self setPhysicsBody:[SKPhysicsBody bodyWithEdgeLoopFromRect:CGRectMake(0.0, 0.0, size.width, size.height)]];
         [self.physicsBody setCategoryBitMask:1];
         [self.physicsBody setCollisionBitMask:2];
@@ -93,11 +93,41 @@
         Tile *tileB = (Tile *)contact.bodyB.node;
 
         if (tileA.numberValue == tileB.numberValue) {
-            if ([tileB respondsToSelector:@selector(removeFromParent)]) {
-                [tileB removeFromParent];
+
+            Tile *topTile = nil;
+            Tile *bottomTile = nil;
+
+            if (tileA.physicsBody.affectedByGravity) {
+                topTile = tileA;
+                bottomTile = tileB;
+            }else{
+                topTile = tileB;
+                bottomTile = tileA;
             }
 
-            tileA.numberValue *= 2.0;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSLog(@"+++++++++++++++  %@",contact);
+
+                [topTile removeAllActions];
+                
+                [topTile.physicsBody setCategoryBitMask:0];
+                [topTile.physicsBody setCollisionBitMask:0];
+                [topTile.physicsBody setContactTestBitMask:0];
+
+                [topTile.physicsBody setAffectedByGravity:NO];
+
+
+                [bottomTile setZPosition:topTile.zPosition + 1];
+
+                [topTile runAction:[SKAction moveTo:bottomTile.position duration:1.15] completion:^{
+                    if ([topTile respondsToSelector:@selector(removeFromParent)]) {
+                        [topTile removeFromParent];
+                    }
+
+                    bottomTile.numberValue *= 2.0;
+                }];
+            });
+
         }else{
             
             NSLog(@"%@",contact);

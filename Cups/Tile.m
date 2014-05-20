@@ -52,11 +52,6 @@
         [self.physicsBody setFriction:100.0];
         [self.physicsBody setRestitution:0.0];
 
-        [self.physicsBody setCategoryBitMask:2];
-        [self.physicsBody setContactTestBitMask:2];
-        [self.physicsBody setCollisionBitMask:2 | 1];
-
-
         [self setNumberValue:numberValue];
     }
 
@@ -71,6 +66,11 @@
     [self.label setFontColor:[UIColor _fontColorForTileNumber:numberValue]];
     [self.rounding setFillColor:[UIColor _colorForTileNumber:numberValue]];
     [self.rounding setStrokeColor:[UIColor _colorForTileNumber:numberValue]];
+
+    [self.physicsBody setCategoryBitMask:(uint32_t)numberValue];
+    [self.physicsBody setContactTestBitMask:(uint32_t)numberValue];
+    [self.physicsBody setCollisionBitMask:~(uint32_t)numberValue];
+
 }
 
 - (void)removeFromParent // Solves iOS 7.1 bug
