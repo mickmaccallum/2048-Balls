@@ -28,16 +28,17 @@
 
         [self.physicsWorld setContactDelegate:self];
         [self.physicsWorld setGravity:CGVectorMake(0.0, -10.0)];
+        
         [self setPhysicsBody:[SKPhysicsBody bodyWithEdgeLoopFromRect:CGRectMake(0.0, 0.0, size.width, size.height)]];
+        
         [self.physicsBody setCategoryBitMask:1];
         [self.physicsBody setCollisionBitMask:2];
-        [self.physicsBody setContactTestBitMask:0];
+        [self.physicsBody setContactTestBitMask:UINT32_MAX];
         [self.physicsBody setFriction:100.0];
         
         [self setBackgroundColor:[UIColor _backgroundColor]];
         
         [self addChild:self.track];
-
         [self addChild:self.leftBucket];
         [self addChild:self.rightBucket];
 
@@ -45,9 +46,7 @@
         CGPathApply(self.track.path, (__bridge void *)(bezierPoints), MyCGPathApplierFunc);
 
         NSValue *value = bezierPoints[0];
-        
         CGPoint start = value.CGPointValue;
-        
 
         for (NSInteger i = 1; i < 20; i += 2) {
             Tile *tile = [[Tile alloc] initWithNumberValue:2];
@@ -78,13 +77,12 @@
 - (void)tapGesture:(UITapGestureRecognizer *)gesture
 {
     Tile *tile = [[Tile alloc] initWithNumberValue:2];
-    [tile setPosition:CGPointMake(self.size.width / 2.0, self.size.height / 2.0)];
+    [tile setPosition:CGPointMake(self.size.width / 2.0 - 40.0, self.size.height / 2.0 + 100.0)];
     [self.track addChild:tile];
 
     [tile.physicsBody setAffectedByGravity:YES];
     [tile.physicsBody setDynamic:YES];
 }
-
 
 - (void)didBeginContact:(SKPhysicsContact *)contact
 {
@@ -113,23 +111,15 @@
                 [topTile.physicsBody setCategoryBitMask:0];
                 [topTile.physicsBody setCollisionBitMask:0];
                 [topTile.physicsBody setContactTestBitMask:0];
-
                 [topTile.physicsBody setAffectedByGravity:NO];
 
-
+                [topTile setScale:0.0];
                 [bottomTile setZPosition:topTile.zPosition + 1];
 
-                [topTile runAction:[SKAction moveTo:bottomTile.position duration:1.15] completion:^{
-                    if ([topTile respondsToSelector:@selector(removeFromParent)]) {
-                        [topTile removeFromParent];
-                    }
-
-                    bottomTile.numberValue *= 2.0;
-                }];
+                [bottomTile runAction:[SKAction sequence:@[[SKAction scaleTo:1.5 duration:0.1],[SKAction scaleTo:1.0 duration:0.1]]]];
+                bottomTile.numberValue *= 2.0;
             });
-
         }else{
-            
             NSLog(@"%@",contact);
         }
     }
@@ -166,13 +156,16 @@
         [bezier moveToPoint:CGPointMake(25.0, topOfTrack - 24.0)];
         [bezier addLineToPoint:CGPointMake(centerX - 17.0, centerY)];
         [bezier addLineToPoint:CGPointMake(centerX - 17.0, centerY - 30.0)];
-        [bezier moveToPoint:CGPointMake(centerX - 17.0, centerY + 50)];
-        [bezier addLineToPoint:CGPointMake(25.0 + 24.0, topOfTrack)];
-        
         
         [_leftBucket setPath:bezier.CGPath];
         [_leftBucket setFillColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
         [_leftBucket setStrokeColor:[SKColor _boardEdgeColor]];
+        
+        [_leftBucket setPhysicsBody:[SKPhysicsBody bodyWithPolygonFromPath:bezier.CGPath]];
+        [_leftBucket.physicsBody setDynamic:NO];
+        [_leftBucket.physicsBody setCategoryBitMask:4];
+        [_leftBucket.physicsBody setCollisionBitMask:UINT32_MAX];
+        [_leftBucket.physicsBody setContactTestBitMask:UINT32_MAX];
     }
     
     return _leftBucket;
@@ -183,6 +176,25 @@
     if (!_rightBucket) {
         _rightBucket = [SKShapeNode new];
         
+        UIBezierPath *bezier = [UIBezierPath bezierPath];
+        
+        CGFloat centerX = self.size.width / 2.0;
+        CGFloat centerY = self.size.height / 2.0;
+        CGFloat topOfTrack = self.track.frame.size.height + self.track.frame.origin.y;
+        
+        [bezier moveToPoint:CGPointMake(295.0, topOfTrack - 24.0)];
+        [bezier addLineToPoint:CGPointMake(centerX + 17.0, centerY)];
+        [bezier addLineToPoint:CGPointMake(centerX + 17.0, centerY - 30.0)];
+        
+        [_rightBucket setPath:bezier.CGPath];
+        [_rightBucket setFillColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
+        [_rightBucket setStrokeColor:[SKColor _boardEdgeColor]];
+        
+        [_rightBucket setPhysicsBody:[SKPhysicsBody bodyWithPolygonFromPath:bezier.CGPath]];
+        [_rightBucket.physicsBody setDynamic:NO];
+        [_rightBucket.physicsBody setCategoryBitMask:4];
+        [_rightBucket.physicsBody setCollisionBitMask:UINT32_MAX];
+        [_rightBucket.physicsBody setContactTestBitMask:UINT32_MAX];
     }
     
     return _rightBucket;

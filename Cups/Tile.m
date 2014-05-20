@@ -28,8 +28,6 @@
         [self setAnchorPoint:CGPointMake(0.5, 0.5)];
         self.rounding = [[SKShapeNode alloc] init];
 
-//        UIBezierPath *bezier = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(-self.size.width / 2.0, -self.size.height / 2.0, self.size.width, self.size.height)
-//                                                          cornerRadius:3.0];
         UIBezierPath *bezier = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(-self.size.width / 2.0, -self.size.height / 2.0, self.size.width, self.size.height)];
 
         [self.rounding setFillColor:[UIColor _colorForTileNumber:2]];
@@ -67,9 +65,13 @@
     [self.rounding setFillColor:[UIColor _colorForTileNumber:numberValue]];
     [self.rounding setStrokeColor:[UIColor _colorForTileNumber:numberValue]];
 
+//    [self.physicsBody setCategoryBitMask:(uint32_t)numberValue];
+//    [self.physicsBody setContactTestBitMask:(uint32_t)numberValue];
+//    [self.physicsBody setCollisionBitMask:~(uint32_t)numberValue];
+
     [self.physicsBody setCategoryBitMask:(uint32_t)numberValue];
-    [self.physicsBody setContactTestBitMask:(uint32_t)numberValue];
-    [self.physicsBody setCollisionBitMask:~(uint32_t)numberValue];
+    [self.physicsBody setContactTestBitMask:(uint32_t)numberValue | 1];
+    [self.physicsBody setCollisionBitMask:~((uint32_t)numberValue | 1)];
 
 }
 
