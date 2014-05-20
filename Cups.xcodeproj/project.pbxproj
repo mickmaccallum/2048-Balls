@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00CE0FE9192BCD2C00BC227A /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 00CE0FE8192BCD2C00BC227A /* SKButton.m */; };
 		00D5CD0C1929D63100B55E28 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00D5CD0B1929D63100B55E28 /* Foundation.framework */; };
 		00D5CD0E1929D63100B55E28 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00D5CD0D1929D63100B55E28 /* CoreGraphics.framework */; };
 		00D5CD101929D63100B55E28 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00D5CD0F1929D63100B55E28 /* UIKit.framework */; };
@@ -39,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00CE0FE7192BCD2C00BC227A /* SKButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKButton.h; sourceTree = "<group>"; };
+		00CE0FE8192BCD2C00BC227A /* SKButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKButton.m; sourceTree = "<group>"; };
 		00D5CD081929D63100B55E28 /* Cups.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cups.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00D5CD0B1929D63100B55E28 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		00D5CD0D1929D63100B55E28 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -138,6 +141,8 @@
 				00D5CD4B1929D8F800B55E28 /* GameScene.m */,
 				00D5CD501929DCE100B55E28 /* Tile.h */,
 				00D5CD511929DCE100B55E28 /* Tile.m */,
+				00CE0FE7192BCD2C00BC227A /* SKButton.h */,
+				00CE0FE8192BCD2C00BC227A /* SKButton.m */,
 				00D5CD531929DCF500B55E28 /* UIColor+GameColors.h */,
 				00D5CD541929DCF500B55E28 /* UIColor+GameColors.m */,
 				00D5CD2A1929D63100B55E28 /* Images.xcassets */,
@@ -272,6 +277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00CE0FE9192BCD2C00BC227A /* SKButton.m in Sources */,
 				00D5CD521929DCE100B55E28 /* Tile.m in Sources */,
 				00D5CD551929DCF500B55E28 /* UIColor+GameColors.m in Sources */,
 				00D5CD241929D63100B55E28 /* ViewController.m in Sources */,

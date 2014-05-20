@@ -9,6 +9,7 @@
 #import "GameScene.h"
 #import "Tile.h"
 #import "UIColor+GameColors.h"
+#import "SKButton.h"
 
 @interface GameScene () < SKPhysicsContactDelegate >
 
@@ -69,6 +70,17 @@
             
             [tile runAction:[SKAction sequence:@[[SKAction waitForDuration:i],[SKAction group:@[[SKAction scaleTo:1.0 duration:0.2],[SKAction repeatActionForever:follow]]]]]];
         }
+
+        SKButton *pauseButton = [[SKButton alloc] initWithColor:[SKColor _colorForTileNumber:2048]
+                                                           size:CGSizeMake(80.0, 44.0)];
+        [pauseButton setPosition:CGPointMake(3.0 * size.width / 4.0, size.height - 44.0)];
+        [pauseButton setTextColor:[SKColor _fontColorForTileNumber:2048]];
+        [pauseButton setText:@"Pause"];
+        [pauseButton addActionOfType:SKButtonActionTypeTouchUpInside
+                           withBlock:^{
+                               NSLog(@"WOOOO");
+                           }];
+        [self addChild:pauseButton];
     }
     
     return self;
@@ -92,11 +104,20 @@
 {
     [super didMoveToView:view];
 
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
-    [longPress setMinimumPressDuration:0.0];
-    [view addGestureRecognizer:longPress];
-
     [self generateQueue];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [super touchesBegan:touches withEvent:event];
+
+    [self.leftDoor runAction:[SKAction rotateToAngle:-M_PI_2
+                                            duration:0.05]];
+
+    [self.rightDoor runAction:[SKAction rotateToAngle:M_PI_2
+                                             duration:0.05]];
+
+    [self setHoldingDoor:YES];
 }
 
 - (NSMutableArray *)queue
@@ -141,20 +162,6 @@
     }
 
     [self addTileAtQueuePosition:2];
-}
-
-- (void)longPress:(UILongPressGestureRecognizer *)gesture
-{
-    if (gesture.state == UIGestureRecognizerStateBegan) {
-
-        [self.leftDoor runAction:[SKAction rotateToAngle:-M_PI_2
-                                                duration:0.05]];
-
-        [self.rightDoor runAction:[SKAction rotateToAngle:M_PI_2
-                                                 duration:0.05]];
-
-        [self setHoldingDoor:YES];
-    }
 }
 
 - (void)generateQueue
