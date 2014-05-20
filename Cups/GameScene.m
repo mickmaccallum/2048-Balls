@@ -13,8 +13,13 @@
 @interface GameScene () < SKPhysicsContactDelegate >
 
 @property (strong, nonatomic) SKShapeNode *track;
-@property (strong, nonatomic) SKShapeNode *leftBucket;
-@property (strong, nonatomic) SKShapeNode *rightBucket;
+@property (strong, nonatomic) SKSpriteNode *leftDoor;
+@property (strong, nonatomic) SKSpriteNode *rightDoor;
+
+@property (strong, nonatomic) SKShapeNode *housing;
+@property (strong, nonatomic) NSMutableArray *queue;
+
+@property (nonatomic, assign, getter = isHoldingDoor) BOOL holdingDoor;
 
 @end
 
@@ -37,10 +42,12 @@
         [self.physicsBody setFriction:100.0];
         
         [self setBackgroundColor:[UIColor _backgroundColor]];
+        [self setHoldingDoor:NO];
         
         [self addChild:self.track];
-        [self addChild:self.leftBucket];
-        [self addChild:self.rightBucket];
+        [self addChild:self.housing];
+        [self addChild:self.leftDoor];
+        [self addChild:self.rightDoor];
 
         NSMutableArray *bezierPoints = [NSMutableArray array];
         CGPathApply(self.track.path, (__bridge void *)(bezierPoints), MyCGPathApplierFunc);
@@ -48,40 +55,126 @@
         NSValue *value = bezierPoints[0];
         CGPoint start = value.CGPointValue;
 
-        for (NSInteger i = 1; i < 20; i += 2) {
-            Tile *tile = [[Tile alloc] initWithNumberValue:2];
-            [tile setAlpha:0.0];
+        for (NSInteger i = 1; i < 30; i += 3) {
+            Tile *tile = [[Tile alloc] initWithNumberValue:[self randomStartingValue]];
+            [tile setOuter:YES];
+            [tile setScale:0.0];
             [tile setPosition:start];
             [self.track addChild:tile];
             
             SKAction *follow = [SKAction followPath:self.track.path
                                            asOffset:NO
                                        orientToPath:NO
-                                           duration:20.0];
+                                           duration:30.0];
             
-            [tile runAction:[SKAction sequence:@[[SKAction waitForDuration:i],[SKAction group:@[[SKAction fadeInWithDuration:0.5],[SKAction repeatActionForever:follow]]]]]];
+            [tile runAction:[SKAction sequence:@[[SKAction waitForDuration:i],[SKAction group:@[[SKAction scaleTo:1.0 duration:0.2],[SKAction repeatActionForever:follow]]]]]];
         }
     }
     
     return self;
 }
 
+- (NSInteger)randomStartingValue
+{
+    uint32_t rand = arc4random_uniform(100) + 1; // 0 - 100
+
+    NSInteger num = 2;
+
+    if (rand % 100 == 0) {
+        num = 8;
+    }else if (rand % 10 == 0) {
+        num = 4;
+    }
+    return num;
+}
+
 - (void)didMoveToView:(SKView *)view
 {
     [super didMoveToView:view];
 
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGesture:)];
-    [view addGestureRecognizer:tapGesture];
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
+    [longPress setMinimumPressDuration:0.0];
+    [view addGestureRecognizer:longPress];
+
+    [self generateQueue];
 }
 
-- (void)tapGesture:(UITapGestureRecognizer *)gesture
+- (NSMutableArray *)queue
 {
-    Tile *tile = [[Tile alloc] initWithNumberValue:2];
-    [tile setPosition:CGPointMake(self.size.width / 2.0 - 40.0, self.size.height / 2.0 + 100.0)];
-    [self.track addChild:tile];
+    if (!_queue) {
+        _queue = [NSMutableArray new];
+    }
+
+    return _queue;
+}
+
+- (void)setHoldingDoor:(BOOL)holdingDoor
+{
+    if (_holdingDoor != holdingDoor) {
+        _holdingDoor = holdingDoor;
+
+        if (holdingDoor && self.queue.count) {
+            Tile *tile = self.queue[0];
+
+            [tile.physicsBody setDynamic:YES];
+
+            SKAction *wait = [SKAction waitForDuration:0.2];
+
+            SKAction *unhold = [SKAction runBlock:^{
+                [self setHoldingDoor:NO];
+            } queue:dispatch_get_main_queue()];
+
+            [self.leftDoor runAction:[SKAction sequence:@[wait,[SKAction rotateToAngle:-M_PI_4 duration:0.15]]]];
+            [self.rightDoor runAction:[SKAction sequence:@[wait,[SKAction rotateToAngle:M_PI_4 duration:0.15],unhold]]];
+
+            [self bumpQueue];
+        }
+    }
+}
+
+- (void)bumpQueue
+{
+    [self.queue removeObjectAtIndex:0];
+
+    for (Tile *tile in self.queue) {
+        tile.queuePosition -- ;
+    }
+
+    [self addTileAtQueuePosition:2];
+}
+
+- (void)longPress:(UILongPressGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateBegan) {
+
+        [self.leftDoor runAction:[SKAction rotateToAngle:-M_PI_2
+                                                duration:0.05]];
+
+        [self.rightDoor runAction:[SKAction rotateToAngle:M_PI_2
+                                                 duration:0.05]];
+
+        [self setHoldingDoor:YES];
+    }
+}
+
+- (void)generateQueue
+{
+    for (NSInteger i = 0; i <= 2; i ++) {
+        [self addTileAtQueuePosition:i];
+    }
+}
+
+- (void)addTileAtQueuePosition:(NSInteger)index
+{
+    Tile *tile = [[Tile alloc] initWithNumberValue:[self randomStartingValue]];
 
     [tile.physicsBody setAffectedByGravity:YES];
-    [tile.physicsBody setDynamic:YES];
+    [tile.physicsBody setDynamic:NO];
+
+    [self.track addChild:tile];
+    [self.queue addObject:tile];
+
+    [tile setQueuePosition:index];
 }
 
 - (void)didBeginContact:(SKPhysicsContact *)contact
@@ -90,37 +183,66 @@
         Tile *tileA = (Tile *)contact.bodyA.node;
         Tile *tileB = (Tile *)contact.bodyB.node;
 
-        if (tileA.numberValue == tileB.numberValue) {
+        if (tileA.isOuter || tileB.isOuter) {
+            if (tileA.numberValue == tileB.numberValue) {
 
-            Tile *topTile = nil;
-            Tile *bottomTile = nil;
+                Tile *topTile = nil;
+                Tile *bottomTile = nil;
 
-            if (tileA.physicsBody.affectedByGravity) {
-                topTile = tileA;
-                bottomTile = tileB;
+                if (tileA.physicsBody.affectedByGravity) {
+                    topTile = tileA;
+                    bottomTile = tileB;
+                }else{
+                    topTile = tileB;
+                    bottomTile = tileA;
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+
+                    [topTile removeAllActions];
+
+                    [topTile.physicsBody setCategoryBitMask:0];
+                    [topTile.physicsBody setCollisionBitMask:0];
+                    [topTile.physicsBody setContactTestBitMask:0];
+                    [topTile.physicsBody setAffectedByGravity:NO];
+
+                    [topTile setScale:0.0];
+                    [bottomTile setZPosition:topTile.zPosition + 1];
+
+                    [bottomTile runAction:[SKAction sequence:@[[SKAction scaleTo:1.5 duration:0.1],[SKAction scaleTo:1.0 duration:0.1]]]];
+                    bottomTile.numberValue *= 2.0;
+                });
             }else{
-                topTile = tileB;
-                bottomTile = tileA;
+                NSLog(@"%@",contact);
             }
+        }
+    }
+}
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSLog(@"+++++++++++++++  %@",contact);
+- (void)didEndContact:(SKPhysicsContact *)contact
+{
+    if ([contact.bodyA.node isMemberOfClass:[self class]] || [contact.bodyB.node isMemberOfClass:[self class]]) {
+        GameScene *scene = nil;
+        Tile *tile = nil;
 
-                [topTile removeAllActions];
-                
-                [topTile.physicsBody setCategoryBitMask:0];
-                [topTile.physicsBody setCollisionBitMask:0];
-                [topTile.physicsBody setContactTestBitMask:0];
-                [topTile.physicsBody setAffectedByGravity:NO];
+        if ([contact.bodyA.node isMemberOfClass:[self class]]) {
+            scene = (GameScene *)contact.bodyA.node;
+        }else if ([contact.bodyB.node isMemberOfClass:[self class]]) {
+            scene = (GameScene *)contact.bodyB.node;
+        }
 
-                [topTile setScale:0.0];
-                [bottomTile setZPosition:topTile.zPosition + 1];
+        if ([contact.bodyA.node isMemberOfClass:[Tile class]]) {
+            tile = (Tile *)contact.bodyA.node;
+        }else if ([contact.bodyB.node isMemberOfClass:[Tile class]]){
+            tile = (Tile *)contact.bodyB.node;
+        }
 
-                [bottomTile runAction:[SKAction sequence:@[[SKAction scaleTo:1.5 duration:0.1],[SKAction scaleTo:1.0 duration:0.1]]]];
-                bottomTile.numberValue *= 2.0;
-            });
-        }else{
-            NSLog(@"%@",contact);
+        if (scene && tile) {
+            if ([tile respondsToSelector:@selector(prepareForRemoval)] && [tile respondsToSelector:@selector(removeFromParent)]) {
+                NSLog(@"Removing node from fall out %@",tile);
+                [tile prepareForRemoval];
+                [tile removeFromParent];
+            }
         }
     }
 }
@@ -142,74 +264,98 @@
     return _track;
 }
 
-- (SKShapeNode *)leftBucket
+- (SKSpriteNode *)leftDoor
 {
-    if (!_leftBucket) {
-        _leftBucket = [SKShapeNode new];
-        
-        UIBezierPath *bezier = [UIBezierPath bezierPath];
-        
-        CGFloat centerX = self.size.width / 2.0;
-        CGFloat centerY = self.size.height / 2.0;
-        CGFloat topOfTrack = self.track.frame.size.height + self.track.frame.origin.y;
-        
-        [bezier moveToPoint:CGPointMake(25.0, topOfTrack - 24.0)];
-        [bezier addLineToPoint:CGPointMake(centerX - 17.0, centerY)];
-        [bezier addLineToPoint:CGPointMake(centerX - 17.0, centerY - 30.0)];
-        
-        [_leftBucket setPath:bezier.CGPath];
-        [_leftBucket setFillColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
-        [_leftBucket setStrokeColor:[SKColor _boardEdgeColor]];
-        
-        [_leftBucket setPhysicsBody:[SKPhysicsBody bodyWithPolygonFromPath:bezier.CGPath]];
-        [_leftBucket.physicsBody setDynamic:NO];
-        [_leftBucket.physicsBody setCategoryBitMask:4];
-        [_leftBucket.physicsBody setCollisionBitMask:UINT32_MAX];
-        [_leftBucket.physicsBody setContactTestBitMask:UINT32_MAX];
+    if (!_leftDoor) {
+        _leftDoor = [[SKSpriteNode alloc] initWithColor:[SKColor _boardEdgeColor]
+                                                   size:CGSizeMake(43.0, 2.0)];
+
+        CGFloat halfWidth = self.size.width / 2.0;
+        CGFloat halfHeight = self.size.height / 2.0;
+
+        [_leftDoor setAnchorPoint:CGPointMake(0.0, 0.5)];
+        [_leftDoor setPosition:CGPointMake(halfWidth - 30.0, halfHeight + 20.0)];
+        [_leftDoor setZRotation:-M_PI_4];
+        [_leftDoor setPhysicsBody:[SKPhysicsBody bodyWithRectangleOfSize:_leftDoor.size]];
+
+        [_leftDoor.physicsBody setDynamic:NO];
+        [_leftDoor.physicsBody setCategoryBitMask:8];
+        [_leftDoor.physicsBody setCollisionBitMask:~8];
+        [_leftDoor.physicsBody setContactTestBitMask:~8];
     }
     
-    return _leftBucket;
+    return _leftDoor;
 }
 
-- (SKShapeNode *)rightBucket
+- (SKSpriteNode *)rightDoor
 {
-    if (!_rightBucket) {
-        _rightBucket = [SKShapeNode new];
-        
-        UIBezierPath *bezier = [UIBezierPath bezierPath];
-        
-        CGFloat centerX = self.size.width / 2.0;
-        CGFloat centerY = self.size.height / 2.0;
-        CGFloat topOfTrack = self.track.frame.size.height + self.track.frame.origin.y;
-        
-        [bezier moveToPoint:CGPointMake(295.0, topOfTrack - 24.0)];
-        [bezier addLineToPoint:CGPointMake(centerX + 17.0, centerY)];
-        [bezier addLineToPoint:CGPointMake(centerX + 17.0, centerY - 30.0)];
-        
-        [_rightBucket setPath:bezier.CGPath];
-        [_rightBucket setFillColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
-        [_rightBucket setStrokeColor:[SKColor _boardEdgeColor]];
-        
-        [_rightBucket setPhysicsBody:[SKPhysicsBody bodyWithPolygonFromPath:bezier.CGPath]];
-        [_rightBucket.physicsBody setDynamic:NO];
-        [_rightBucket.physicsBody setCategoryBitMask:4];
-        [_rightBucket.physicsBody setCollisionBitMask:UINT32_MAX];
-        [_rightBucket.physicsBody setContactTestBitMask:UINT32_MAX];
+    if (!_rightDoor) {
+        _rightDoor = [[SKSpriteNode alloc] initWithColor:[SKColor _boardEdgeColor]
+                                                   size:CGSizeMake(43.0, 2.0)];
+
+        CGFloat halfWidth = self.size.width / 2.0;
+        CGFloat halfHeight = self.size.height / 2.0;
+
+        [_rightDoor setAnchorPoint:CGPointMake(1.0, 0.5)];
+        [_rightDoor setPosition:CGPointMake(halfWidth + 30.0, halfHeight + 20.0)];
+
+        [_rightDoor setPhysicsBody:[SKPhysicsBody bodyWithRectangleOfSize:_rightDoor.size]];
+        [_rightDoor setZRotation:M_PI_4];
+        [_rightDoor.physicsBody setDynamic:NO];
+        [_rightDoor.physicsBody setCategoryBitMask:8];
+        [_rightDoor.physicsBody setCollisionBitMask:~8];
+        [_rightDoor.physicsBody setContactTestBitMask:~8];
     }
     
-    return _rightBucket;
+    return _rightDoor;
+}
+
+- (SKShapeNode *)housing
+{
+    if (!_housing) {
+        _housing = [[SKShapeNode alloc] init];
+
+        UIBezierPath *bezier = [UIBezierPath bezierPath];
+
+        CGFloat halfWidth = self.size.width / 2.0;
+        CGFloat halfHeight = self.size.height / 2.0;
+
+        // Bottom Center
+        [bezier moveToPoint:CGPointMake(halfWidth - 30.0, halfHeight + 20.0)];
+        [bezier addLineToPoint:CGPointMake(halfWidth, halfHeight + 50.0)];
+        [bezier addLineToPoint:CGPointMake(halfWidth + 30.0, halfHeight + 20.0)];
+
+        // Right (already at starting point)
+        [bezier addLineToPoint:CGPointMake(halfWidth + 60.0, halfHeight + 50.0)];
+        [bezier addLineToPoint:CGPointMake(halfWidth + 30.0, halfHeight + 80.0)];
+        [bezier addLineToPoint:CGPointMake(halfWidth, halfHeight + 50.0)];
+
+        // Left (already at starting point)
+        [bezier addLineToPoint:CGPointMake(halfWidth - 30.0, halfHeight + 80.0)];
+        [bezier addLineToPoint:CGPointMake(halfWidth - 60.0, halfHeight + 50.0)];
+        [bezier addLineToPoint:CGPointMake(halfWidth - 30.0, halfHeight + 20.0)];
+
+        // Top
+        [bezier moveToPoint:CGPointMake(halfWidth - 30.0, halfHeight + 80.0)];
+        [bezier addLineToPoint:CGPointMake(halfWidth, halfHeight + 110.0)];
+        [bezier addLineToPoint:CGPointMake(halfWidth + 30.0, halfHeight + 80.0)];
+
+        [_housing setPath:bezier.CGPath];
+        [_housing setLineWidth:2.0];
+        [_housing setStrokeColor:[SKColor _boardEdgeColor]];
+        [_housing setAntialiased:NO];
+    }
+
+    return _housing;
 }
 
 - (void)removeFromParent // Fuck iOS 7.1
 {
     [self.track removeFromParent];
     [self setTrack:nil];
-    
-    [self.leftBucket removeFromParent];
-    [self setLeftBucket:nil];
-    
-    [self.rightBucket removeFromParent];
-    [self setRightBucket:nil];
+
+    [self.housing removeFromParent];
+    [self setHousing:nil];
     
     [super removeFromParent];
 }

@@ -8,24 +8,33 @@
 
 #import "ViewController.h"
 #import "GameScene.h"
+@import iAd;
+
+@interface ViewController () < ADBannerViewDelegate >
+
+@property (weak, nonatomic) IBOutlet ADBannerView *adBanner;
+
+@end
 
 @implementation ViewController
 
-- (void)viewDidLoad
+- (void)viewWillLayoutSubviews
 {
-    [super viewDidLoad];
+    [super viewWillLayoutSubviews];
 
-    // Configure the view.
-    SKView * skView = (SKView *)self.view;
-    skView.showsFPS = YES;
-    skView.showsNodeCount = YES;
-    
-    // Create and configure the scene.
-    SKScene * scene = [GameScene sceneWithSize:skView.bounds.size];
-    scene.scaleMode = SKSceneScaleModeAspectFill;
-    
-    // Present the scene.
-    [skView presentScene:scene];
+    SKView *skView = (SKView *)self.view;
+
+    if (!skView.scene) {
+        [skView setShowsDrawCount:YES];
+        [skView setShowsFPS:YES];
+        [skView setShowsNodeCount:YES];
+//        [skView setShowsPhysics:YES];
+
+        SKScene *scene = [GameScene sceneWithSize:skView.bounds.size];
+        [scene setScaleMode:SKSceneScaleModeAspectFill];
+
+        [skView presentScene:scene];
+    }
 }
 
 - (BOOL)shouldAutorotate
@@ -43,10 +52,55 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void)didReceiveMemoryWarning
+- (void)bannerViewDidLoadAd:(ADBannerView *)banner
 {
-    [super didReceiveMemoryWarning];
-    // Release any cached data, images, etc that aren't in use.
+    if (self.adBanner.alpha == 0.0) {
+        [UIView animateWithDuration:0.25
+                              delay:0.0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             [self.adBanner setAlpha:1.0];
+                         }
+                         completion:nil];
+    }
+}
+
+- (void)bannerView:(ADBannerView *)banner didFailToReceiveAdWithError:(NSError *)error
+{
+    if (self.adBanner.alpha != 0.0) {
+        [UIView animateWithDuration:0.25
+                              delay:0.0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             [self.adBanner setAlpha:0.0];
+                         }
+                         completion:nil];
+    }
+}
+
+- (BOOL)bannerViewActionShouldBegin:(ADBannerView *)banner
+               willLeaveApplication:(BOOL)willLeave
+{
+    SKView *skView = (SKView *)self.view;
+
+    if (skView.scene) {
+        if ([skView.scene respondsToSelector:@selector(setPaused:)]) {
+            [skView.scene setPaused:YES];
+        }
+    }
+
+    return YES;
+}
+
+- (void)bannerViewActionDidFinish:(ADBannerView *)banner
+{
+    SKView *skView = (SKView *)self.view;
+
+    if (skView.scene) {
+        if ([skView.scene respondsToSelector:@selector(setPaused:)]) {
+            [skView.scene setPaused:NO];
+        }
+    }
 }
 
 @end

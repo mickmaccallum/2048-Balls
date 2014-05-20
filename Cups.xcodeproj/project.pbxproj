@@ -25,6 +25,7 @@
 		00D5CD4C1929D8F800B55E28 /* GameScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD4B1929D8F800B55E28 /* GameScene.m */; };
 		00D5CD521929DCE100B55E28 /* Tile.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD511929DCE100B55E28 /* Tile.m */; };
 		00D5CD551929DCF500B55E28 /* UIColor+GameColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 00D5CD541929DCF500B55E28 /* UIColor+GameColors.m */; };
+		00F0DD08192BA00700B3B50D /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00F0DD07192BA00700B3B50D /* iAd.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		00D5CD511929DCE100B55E28 /* Tile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tile.m; sourceTree = "<group>"; };
 		00D5CD531929DCF500B55E28 /* UIColor+GameColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+GameColors.h"; sourceTree = "<group>"; };
 		00D5CD541929DCF500B55E28 /* UIColor+GameColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+GameColors.m"; sourceTree = "<group>"; };
+		00F0DD07192BA00700B3B50D /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00F0DD08192BA00700B3B50D /* iAd.framework in Frameworks */,
 				00D5CD0E1929D63100B55E28 /* CoreGraphics.framework in Frameworks */,
 				00D5CD101929D63100B55E28 /* UIKit.framework in Frameworks */,
 				00D5CD121929D63100B55E28 /* SpriteKit.framework in Frameworks */,
@@ -113,6 +116,7 @@
 		00D5CD0A1929D63100B55E28 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				00F0DD07192BA00700B3B50D /* iAd.framework */,
 				00D5CD0B1929D63100B55E28 /* Foundation.framework */,
 				00D5CD0D1929D63100B55E28 /* CoreGraphics.framework */,
 				00D5CD0F1929D63100B55E28 /* UIKit.framework */,
@@ -482,6 +486,7 @@
 				00D5CD431929D63100B55E28 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		00D5CD441929D63100B55E28 /* Build configuration list for PBXNativeTarget "CupsTests" */ = {
 			isa = XCConfigurationList;
@@ -490,6 +495,7 @@
 				00D5CD461929D63100B55E28 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
