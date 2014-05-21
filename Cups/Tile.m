@@ -115,14 +115,22 @@
 //
 //    SKAction *scaleUp = [SKAction scaleTo:1.0
 //                                   duration:0.15];
-
-    SKAction *move = [SKAction moveTo:CGPointFromString([self startingPositions][queuePosition]) duration:0.15];
+    
+    SKAction *action = nil;
+    
+    if (CGPointEqualToPoint(self.position, CGPointZero)) {
+        [self setScale:0.0];
+        [self setPosition:CGPointFromString([self startingPositions][queuePosition])];
+        action = [SKAction scaleTo:1.0 duration:0.2];
+    }else{
+        action = [SKAction moveTo:CGPointFromString([self startingPositions][queuePosition]) duration:0.2];
+    }
 
     SKAction *block = [SKAction runBlock:^{
         [self setPosition:CGPointFromString([self startingPositions][queuePosition])];
     } queue:dispatch_get_main_queue()];
 
-    [self runAction:[SKAction sequence:@[move,block]]];
+    [self runAction:[SKAction sequence:@[action,block]]];
 }
 
 

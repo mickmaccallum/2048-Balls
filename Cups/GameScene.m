@@ -97,6 +97,7 @@
     }else if (rand % 10 == 0) {
         num = 4;
     }
+    
     return num;
 }
 
@@ -110,12 +111,22 @@
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [super touchesBegan:touches withEvent:event];
+    
+    if ([self.leftDoor actionForKey:@"leftDoor"]) {
+        [self.leftDoor removeActionForKey:@"leftDoor"];
+    }
+    
+    if ([self.rightDoor actionForKey:@"rightDoor"]) {
+        [self.rightDoor removeActionForKey:@"rightDoor"];
+    }
 
     [self.leftDoor runAction:[SKAction rotateToAngle:-M_PI_2
-                                            duration:0.05]];
+                                            duration:0.05]
+                     withKey:@"leftDoor"];
 
     [self.rightDoor runAction:[SKAction rotateToAngle:M_PI_2
-                                             duration:0.05]];
+                                             duration:0.05]
+                      withKey:@"rightDoor"];
 
     [self setHoldingDoor:YES];
 }
@@ -144,8 +155,16 @@
             SKAction *unhold = [SKAction runBlock:^{
                 [self setHoldingDoor:NO];
             } queue:dispatch_get_main_queue()];
+            
+            if ([self.leftDoor actionForKey:@"leftDoor"]) {
+                [self.leftDoor removeActionForKey:@"leftDoor"];
+            }
+            
+            if ([self.rightDoor actionForKey:@"rightDoor"]) {
+                [self.rightDoor removeActionForKey:@"rightDoor"];
+            }
 
-            [self.leftDoor runAction:[SKAction sequence:@[wait,[SKAction rotateToAngle:-M_PI_4 duration:0.15]]]];
+            [self.leftDoor runAction:[SKAction sequence:@[wait,[SKAction rotateToAngle:-M_PI_4 duration:0.15]]] withKey:@"leftDoor"];
             [self.rightDoor runAction:[SKAction sequence:@[wait,[SKAction rotateToAngle:M_PI_4 duration:0.15],unhold]]];
 
             [self bumpQueue];
